@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo TCC - CRUD de Carteira de Ativos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border: #334155;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --accent: #8b5cf6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-crud {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-academic {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-num {
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.65rem 0.9rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .row {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .row > * {
+            flex: 1;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        button.btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        button.btn-outline:hover {
+            background: var(--surface-hover);
+            border-color: var(--text-muted);
+        }
+
+        button.btn-success {
+            background: var(--success);
+        }
+
+        button.btn-success:hover {
+            background: #059669;
+        }
+
+        /* Destaque do Saldo */
+        .balance-display {
+            background: #0f172a;
+            border: 2px dashed rgba(59, 130, 246, 0.4);
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .balance-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .balance-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #38bdf8;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0.25rem 0;
+        }
+
+        .balance-note {
+            font-size: 0.75rem;
+            color: #fbbf24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+
+        /* Tabela */
+        .table-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            background: #0f172a;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .type-tag {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .type-deposito { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .type-saque { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .type-compra { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .type-venda { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+        /* Console / Feed */
+        .log-box {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #a5b4fc;
+            max-height: 140px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .toast.show { display: block; }
+        .toast.success { border-color: var(--success); color: var(--success); }
+        .toast.error { border-color: var(--danger); color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>📊 Protótipo TCC — Carteira CRUD</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem;">
+                Visualização do modelo relacional tradicional & sobrescrita de saldo (*in-place update*)
+            </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <span class="badge badge-crud">PostgreSQL / JPA</span>
+            <span class="badge badge-academic">Prova de Conceito</span>
+        </div>
+    </header>
+
+    <div class="grid">
+        <!-- 1. CLIENTE -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="step-num">1</span>
+                    <span>Cliente</span>
+                </div>
+                <span id="clienteStatusBadge" class="badge" style="display:none;"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="clienteNome">Nome Completo</label>
+                <input type="text" id="clienteNome" placeholder="Ex: Bernardo Mendes" value="Bernardo Mendes">
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="clienteCpf">CPF</label>
+                    <input type="text" id="clienteCpf" placeholder="000.000.000-00" value="123.456.789-00">
+                </div>
+                <div class="form-group">
+                    <label for="clienteEmail">Email</label>
+                    <input type="email" id="clienteEmail" placeholder="email@exemplo.com" value="bernardo@exemplo.com">
+                </div>
+            </div>
+
+            <button onclick="criarCliente()">➕ Criar Novo Cliente</button>
+
+            <div style="border-top: 1px dashed var(--border); padding-top: 0.75rem; margin-top: 0.25rem;">
+                <label style="margin-bottom: 0.3rem; display: block;">Ou buscar por ID:</label>
+                <div class="row">
+                    <input type="number" id="buscarClienteId" placeholder="ID (ex: 1)" style="flex: 1;">
+                    <button class="btn-outline" onclick="buscarCliente()">Buscar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. CARTEIRA -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="step-num">2</span>
+                    <span>Carteira de Ativos</span>
+                </div>
+                <span id="carteiraBadge" class="badge" style="display:none;"></span>
+            </div>
+
+            <div class="balance-display">
+                <div class="balance-label">Saldo Atual (Coluna `saldo`)</div>
+                <div class="balance-value" id="displaySaldo">R$ 0,00</div>
+                <div class="balance-note">
+                    ⚠️ <span>Atualização destrutiva: sobrescreve o valor anterior</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <button class="btn-outline" onclick="criarCarteiraParaClienteAtual()">➕ Criar Carteira</button>
+                <div style="display: flex; gap: 0.5rem; flex: 1;">
+                    <input type="number" id="buscarCarteiraId" placeholder="ID Carteira" style="width: 90px;">
+                    <button class="btn-outline" style="flex:1;" onclick="carregarCarteiraPorId()">Carregar</button>
+                </div>
+            </div>
+
+            <div id="carteiraInfo" style="font-size: 0.85rem; color: var(--text-muted);">
+                Nenhuma carteira selecionada no momento.
+            </div>
+        </div>
+
+        <!-- 3. TRANSAÇÃO -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="step-num">3</span>
+                    <span>Executar Ordem / Transação</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="transacaoTipo">Tipo de Operação</label>
+                <select id="transacaoTipo">
+                    <option value="DEPOSITO">Depósito em Dinheiro (+)</option>
+                    <option value="SAQUE">Saque em Dinheiro (-)</option>
+                    <option value="VENDA_ATIVO">Venda de Ações / Cripto (+)</option>
+                    <option value="COMPRA_ATIVO">Compra de Ações / Cripto (-)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="transacaoValor">Valor (R$)</label>
+                <input type="number" step="0.01" id="transacaoValor" placeholder="Ex: 500.00" value="500.00">
+            </div>
+
+            <button class="btn-success" onclick="executarTransacao()">
+                ⚡ Executar e Atualizar Saldo
+            </button>
+
+            <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                📌 <strong>Ação no Backend:</strong> executa <code>UPDATE carteira SET saldo = saldo + valor</code> e grava 1 linha na tabela <code>transacao</code>.
+            </div>
+        </div>
+    </div>
+
+    <!-- TABELA DE TRANSAÇÕES -->
+    <div class="table-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-size: 1.1rem; font-weight: 600;">📜 Histórico de Ordens da Carteira Ativa</h2>
+            <button class="btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="recarregarCarteiraAtual()">🔄 Atualizar</button>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">ID</th>
+                        <th>Tipo</th>
+                        <th>Valor (R$)</th>
+                        <th>Data / Hora</th>
+                        <th>Impacto no Saldo</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaTransacoesBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            Nenhuma transação carregada. Crie um cliente e uma carteira para testar!
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- LOG / CONSOLE -->
+    <div class="card" style="padding: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">📡 LOG DE REQUISIÇÕES REST (F12)</span>
+            <span style="font-size: 0.75rem; color: var(--primary);" id="logStatus">Pronto</span>
+        </div>
+        <div class="log-box" id="logBox">Sistema iniciado. Aguardando interação...</div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+    let clienteAtual = null;
+    let carteiraAtual = null;
+
+    function log(msg) {
+        const box = document.getElementById('logBox');
+        const time = new Date().toLocaleTimeString();
+        box.textContent = `[${time}] ${msg}\n` + box.textContent;
+    }
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = `toast show ${type}`;
+        setTimeout(() => { toast.className = 'toast'; }, 3500);
+    }
+
+    function formatMoney(val) {
+        return Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function formatDate(dtString) {
+        if (!dtString) return '-';
+        const date = new Date(dtString);
+        return isNaN(date.getTime()) ? dtString : date.toLocaleString('pt-BR');
+    }
+
+    // 1. CLIENTE
+    async function criarCliente() {
+        const nome = document.getElementById('clienteNome').value.trim();
+        const cpf = document.getElementById('clienteCpf').value.trim();
+        const email = document.getElementById('clienteEmail').value.trim();
+
+        if (!nome || !cpf || !email) {
+            showToast('Preencha todos os campos do cliente!', 'error');
+            return;
+        }
+
+        try {
+            log(`POST /cliente -> Criando cliente: ${nome}`);
+            const res = await fetch('/cliente', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, cpf, email })
+            });
+
+            if (!res.ok) throw new Error('Erro ao salvar cliente');
+            const data = await res.json();
+            setClienteAtivo(data);
+            showToast(`Cliente #${data.id} (${data.nome}) criado com sucesso!`);
+            log(`Resposta: Cliente cadastrado com ID #${data.id}`);
+        } catch (err) {
+            showToast(err.message, 'error');
+            log(`Erro: ${err.message}`);
+        }
+    }
+
+    async function buscarCliente() {
+        const id = document.getElementById('buscarClienteId').value;
+        if (!id) return showToast('Informe o ID do cliente', 'error');
+
+        try {
+            log(`GET /cliente/${id}`);
+            const res = await fetch(`/cliente/${id}`);
+            if (!res.ok) throw new Error('Cliente não encontrado');
+            const data = await res.json();
+            setClienteAtivo(data);
+            showToast(`Cliente #${data.id} carregado!`);
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    function setClienteAtivo(cliente) {
+        clienteAtual = cliente;
+        const badge = document.getElementById('clienteStatusBadge');
+        badge.style.display = 'inline-block';
+        badge.className = 'badge badge-crud';
+        badge.textContent = `Cliente Ativo: #${cliente.id}`;
+    }
+
+    // 2. CARTEIRA
+    async function criarCarteiraParaClienteAtual() {
+        if (!clienteAtual) {
+            showToast('Crie ou busque um cliente no Passo 1 primeiro!', 'error');
+            return;
+        }
+
+        try {
+            log(`POST /carteira?clienteId=${clienteAtual.id}`);
+            const res = await fetch(`/carteira?clienteId=${clienteAtual.id}`, { method: 'POST' });
+            if (!res.ok) throw new Error('Erro ao criar carteira');
+            const data = await res.json();
+            setCarteiraAtiva(data);
+            showToast(`Carteira #${data.id} criada para o Cliente #${clienteAtual.id}!`);
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    async function carregarCarteiraPorId() {
+        const id = document.getElementById('buscarCarteiraId').value;
+        if (!id) return showToast('Informe o ID da carteira', 'error');
+
+        try {
+            log(`GET /carteira/${id}`);
+            const res = await fetch(`/carteira/${id}`);
+            if (!res.ok) throw new Error('Carteira não encontrada');
+            const data = await res.json();
+            setCarteiraAtiva(data);
+            showToast(`Carteira #${data.id} carregada!`);
+        } catch (err) {
+            showToast(err.message, 'error');
+        }
+    }
+
+    async function recarregarCarteiraAtual() {
+        if (!carteiraAtual) return showToast('Nenhuma carteira ativa para recarregar', 'error');
+        try {
+            const res = await fetch(`/carteira/${carteiraAtual.id}`);
+            if (res.ok) {
+                const data = await res.json();
+                setCarteiraAtiva(data);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function setCarteiraAtiva(carteira) {
+        carteiraAtual = carteira;
+        document.getElementById('displaySaldo').textContent = formatMoney(carteira.saldo);
+        
+        const badge = document.getElementById('carteiraBadge');
+        badge.style.display = 'inline-block';
+        badge.className = 'badge badge-academic';
+        badge.textContent = `Carteira #${carteira.id}`;
+
+        document.getElementById('carteiraInfo').innerHTML = `
+            <strong>ID Carteira:</strong> #${carteira.id} | 
+            <strong>Cliente ID:</strong> #${carteira.clienteId} |
+            <strong>Qtd. Transações:</strong> ${carteira.transacoes ? carteira.transacoes.length : 0}
+        `;
+
+        renderizarTransacoes(carteira.transacoes || []);
+    }
+
+    // 3. TRANSAÇÃO
+    async function executarTransacao() {
+        if (!carteiraAtual) {
+            showToast('Selecione ou crie uma carteira no Passo 2!', 'error');
+            return;
+        }
+
+        const tipo = document.getElementById('transacaoTipo').value;
+        let valor = parseFloat(document.getElementById('transacaoValor').value);
+
+        if (isNaN(valor) || valor <= 0) {
+            showToast('Informe um valor válido e positivo', 'error');
+            return;
+        }
+
+        // Se for saque ou compra de ativo, o impacto financeiro no saldo é negativo
+        let valorCalculado = valor;
+        if (tipo === 'SAQUE' || tipo === 'COMPRA_ATIVO') {
+            valorCalculado = -Math.abs(valor);
+        }
+
+        try {
+            log(`POST /carteira/${carteiraAtual.id}/transacoes -> { valor: ${valorCalculado}, tipo: "${tipo}" }`);
+            const res = await fetch(`/carteira/${carteiraAtual.id}/transacoes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ valor: valorCalculado, tipo: tipo })
+            });
+
+            if (!res.ok) throw new Error('Erro ao processar transação');
+            const data = await res.json();
+            setCarteiraAtiva(data);
+            showToast(`Transação de ${formatMoney(valorCalculado)} executada com sucesso!`);
+            log(`Sucesso! Novo saldo atualizado no banco: ${formatMoney(data.saldo)}`);
+        } catch (err) {
+            showToast(err.message, 'error');
+            log(`Erro na transação: ${err.message}`);
+        }
+    }
+
+    function renderizarTransacoes(lista) {
+        const tbody = document.getElementById('tabelaTransacoesBody');
+        if (!lista || lista.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                        Nenhuma transação registrada nesta carteira ainda.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = lista.map(t => {
+            const isPositivo = Number(t.valor) >= 0;
+            let tagClass = 'type-deposito';
+            if (t.tipo === 'SAQUE') tagClass = 'type-saque';
+            else if (t.tipo === 'COMPRA_ATIVO') tagClass = 'type-compra';
+            else if (t.tipo === 'VENDA_ATIVO') tagClass = 'type-venda';
+
+            return `
+                <tr>
+                    <td style="font-family: 'JetBrains Mono'; font-weight: 600;">#${t.id || '-'}</td>
+                    <td><span class="type-tag ${tagClass}">${t.tipo}</span></td>
+                    <td style="font-family: 'JetBrains Mono'; font-weight: 600; color: ${isPositivo ? '#34d399' : '#f87171'};">
+                        ${isPositivo ? '+' : ''}${formatMoney(t.valor)}
+                    </td>
+                    <td style="color: var(--text-muted);">${formatDate(t.dataHora)}</td>
+                    <td style="font-size: 0.8rem; color: var(--text-muted);">
+                        Sobrescreve <code>carteira.saldo</code>
+                    </td>
+                </tr>
+            `;
+        }).reverse().join('');
+    }
+</script>
+
+</body>
+</html>
