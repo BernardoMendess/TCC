@@ -16,15 +16,16 @@ public class EventoService {
     @Autowired
     private EventoRepository eventoRepository;
 
-    public Evento save(EventoDTO evento){
+    public Evento save(EventoDTO evento) {
         val eventoEntity = new Evento();
 
         eventoEntity.setCarteiraId(evento.getCarteiraId());
         eventoEntity.setDataHora(LocalDateTime.now());
-        eventoEntity.setTipo(TipoEvento.valueOf(evento.getTipo()));
+        eventoEntity.setTipo(TipoEvento.valueOf(evento.getTipo().toUpperCase()));
         eventoEntity.setValor(evento.getValor());
-        eventoEntity.setSequencia(eventoRepository.findMaxSequencia(eventoEntity.getCarteiraId()));
+        eventoEntity.setSequencia(eventoRepository.findNextSequencia(evento.getCarteiraId()));
 
         return eventoRepository.save(eventoEntity);
     }
 }
+

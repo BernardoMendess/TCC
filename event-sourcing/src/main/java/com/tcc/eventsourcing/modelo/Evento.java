@@ -1,6 +1,5 @@
 package com.tcc.eventsourcing.modelo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "transacao")
+@Table(name = "evento")
 public class Evento {
 
     @Id
@@ -32,9 +31,10 @@ public class Evento {
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora = LocalDateTime.now();
 
-    @Column()
+    @Column(name = "carteira_id", nullable = false)
     private Long carteiraId;
 
-    @Column()
+    @Column(nullable = false)
     private Integer sequencia;
 }
+

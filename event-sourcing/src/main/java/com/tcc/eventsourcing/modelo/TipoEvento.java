@@ -1,12 +1,14 @@
 package com.tcc.eventsourcing.modelo;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public enum TipoEvento {
-    SAQUE, DEPOSITO;
+    SAQUE("Saque"),
+    DEPOSITO("Depósito");
 
-    private String descricao;
+    private final String descricao;
 }
+

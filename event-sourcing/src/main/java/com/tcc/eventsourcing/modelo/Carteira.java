@@ -7,10 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,10 +23,5 @@ public class Carteira {
     @JoinColumn(name = "cliente_id", nullable = false)
     @JsonIgnore
     private Cliente cliente;
-
-    @Column(nullable = false)
-    private BigDecimal saldo = BigDecimal.ZERO;
-
-    @OneToMany(mappedBy = "carteira", cascade = CascadeType.ALL)
-    private List<Evento> eventos = new ArrayList<>();
 }
+
